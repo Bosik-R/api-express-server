@@ -14,13 +14,19 @@ router.route('/seats/:id').get((req, res) => {
 });
 
 router.route('/seats').post((req, res) => {
-  db.seats.push({ 
-    id: randomID(10), 
-    day: req.body.day,
-    seat: req.body.seat,
-    client: req.body.client,
-    email: req.body.email,
-  });
+  const seatTaken = db.seats.some(data => data.day === req.params.day && data.seat === req.params.seat);
+  if(seatTaken){
+    res.status(403).json({massage: 'The slot is already taken...'});
+  }else{
+
+    db.seats.push({ 
+      id: randomID(10), 
+      day: req.body.day,
+      seat: req.body.seat,
+      client: req.body.client,
+      email: req.body.email,
+    });
+  }
 
   res.json(confirm);
 });
