@@ -5,6 +5,9 @@
   "repository": "git@github.com:Bosik-R/api-express-server.git",
   "author": "Tomasz Rosik <Bosik27@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
   "dependencies": {
     "@bosiu/id-generator": "^1.0.2",
     "cors": "^2.8.5",
