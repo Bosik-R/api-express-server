@@ -34,7 +34,7 @@ router.route('/concerts/:id').put((req, res) => {
       db.concerts[i].price = req.body.price,
       db.concerts[i].day = req.body.day,
       db.concerts[i].image = req.body.image,
-        
+
       res.json(confirm);
       } else {
         res.json({message: 'Data with this id doesnt exists'})
