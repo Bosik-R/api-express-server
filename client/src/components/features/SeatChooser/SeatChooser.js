@@ -1,23 +1,15 @@
 import React from 'react';
 import { Button, Progress, Alert } from 'reactstrap';
-import { loadSeatsRequest } from '../../../redux/seatsRedux';
-
+import io from 'socket.io-client';
 import './SeatChooser.scss';
 
 class SeatChooser extends React.Component {
   
-  interval = (arr) => {setInterval(arr, 120000)}
-
   componentDidMount() {
+    this.socket = io.connect(process.env.ENV_NODE === 'production' ? process.env.PUBLIC_URL : 'localhost:8000');
     const { loadSeats } = this.props;
     loadSeats();
-    this.interval(loadSeats);
   }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
 
   isTaken = (seatId) => {
     const { seats, chosenDay } = this.props;
