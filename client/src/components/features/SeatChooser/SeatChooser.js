@@ -4,13 +4,31 @@ import io from 'socket.io-client';
 import './SeatChooser.scss';
 
 class SeatChooser extends React.Component {
-  
+  state = {
+    seatsTotal: 40,
+  }
   componentDidMount() {
-    this.socket = io.connect(process.env.ENV_NODE === 'production' ? process.env.PUBLIC_URL : 'localhost:8000');
-    const { loadSeats } = this.props;
+    const { loadSeats, loadSeatsUpdate } = this.props;
+    
     loadSeats();
+
+    this.socket = io.connect(process.env.ENV_NODE === 'production' ? process.env.PUBLIC_URL : 'localhost:8000');
+    this.socket.on('seatsUpdated', (seats) => {
+      loadSeatsUpdate(seats);
+    });
   }
 
+  seatsSummary = (seats) => {
+    const { seatsTotal } = this.state;
+    const seatsTaken = seats.filter(seat => seat.id );
+    const free = seatsTotal - seatsTaken.length;
+
+    if(free !== 0){
+      return `Free seats ${free} / ${seatsTotal}`
+    } else {
+      return 'Sorry all Seats are taken'
+    }
+  }
   isTaken = (seatId) => {
     const { seats, chosenDay } = this.props;
 
@@ -29,16 +47,18 @@ class SeatChooser extends React.Component {
   render() {
 
     const { prepareSeat } = this;
-    const { requests } = this.props;
+    const { requests, seats } = this.props;
+    const { seatsTotal } = this.state;
 
     return (
       <div>
         <h3>Pick a seat</h3>
         <small id="pickHelp" className="form-text text-muted ml-2"><Button color="secondary" /> – seat is already taken</small>
         <small id="pickHelpTwo" className="form-text text-muted ml-2 mb-4"><Button outline color="primary" /> – it's empty</small>
-        { (requests['LOAD_SEATS'] && requests['LOAD_SEATS'].success) && <div className="seats">{[...Array(50)].map((x, i) => prepareSeat(i+1) )}</div>}
+        { (requests['LOAD_SEATS'] && requests['LOAD_SEATS'].success) && <div className="seats">{[...Array(seatsTotal)].map((x, i) => prepareSeat(i+1) )}</div>}
         { (requests['LOAD_SEATS'] && requests['LOAD_SEATS'].pending) && <Progress animated color="primary" value={50} /> }
         { (requests['LOAD_SEATS'] && requests['LOAD_SEATS'].error) && <Alert color="warning">Couldn't load seats...</Alert> }
+        { (requests['LOAD_SEATS'] && requests['LOAD_SEATS'].success) && <p>{this.seatsSummary(seats)}</p>}
       </div>
     )
   };

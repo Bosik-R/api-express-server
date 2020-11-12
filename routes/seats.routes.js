@@ -18,7 +18,6 @@ router.route('/seats').post((req, res) => {
   if(seatTaken){
     res.status(403).json({massage: 'The slot is already taken...'});
   }else{
-
     db.seats.push({ 
       id: randomID(10), 
       day: req.body.day,
@@ -26,6 +25,7 @@ router.route('/seats').post((req, res) => {
       client: req.body.client,
       email: req.body.email,
     });
+    req.io.emit('seatsUpdated', (db.seats));
   }
 
   res.json(confirm);
