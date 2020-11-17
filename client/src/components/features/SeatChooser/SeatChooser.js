@@ -20,15 +20,16 @@ class SeatChooser extends React.Component {
 
   seatsSummary = (seats) => {
     const { seatsTotal } = this.state;
-    const seatsTaken = seats.filter(seat => seat.id );
-    const free = seatsTotal - seatsTaken.length;
-
+    const { chosenDay } = this.props;
+    const free = seatsTotal - seats.filter(seat => seat.day === chosenDay).length;
+  
     if(free !== 0){
       return `Free seats ${free} / ${seatsTotal}`
     } else {
       return 'Sorry all Seats are taken'
     }
   }
+  
   isTaken = (seatId) => {
     const { seats, chosenDay } = this.props;
 
@@ -45,7 +46,6 @@ class SeatChooser extends React.Component {
   }
 
   render() {
-
     const { prepareSeat } = this;
     const { requests, seats } = this.props;
     const { seatsTotal } = this.state;
